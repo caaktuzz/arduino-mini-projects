@@ -1,4 +1,5 @@
-#define ledPin_4 4
+// announcement of pins
+#define ledPin_4 4 
 #define ledPin_5 5
 #define ledPin_6 6
 
@@ -6,6 +7,7 @@
 
 int num = 0;
 
+// delay func
 boolean timeSleep(int milliseconds) {
   uint64_t timeStamp = millis();
   while (true) {
@@ -17,7 +19,7 @@ boolean timeSleep(int milliseconds) {
 }
 
 void setup () {
-  Serial.begin(9600);
+  Serial.begin(9600); // start seral-port
 
   pinMode(ledPin_4, OUTPUT);
   pinMode(ledPin_5, OUTPUT);
@@ -28,14 +30,14 @@ void setup () {
 
 void loop () {
 
-  Serial.println(num += 1);
+  Serial.println(num += 1); // output number of cycles
 
-  if (digitalRead(buttonPin) == LOW) {
-    digitalWrite(ledPin_4, HIGH); timeSleep(100);
+  if (digitalRead(buttonPin) == LOW) { // switch on lightariki
+    digitalWrite(ledPin_4, HIGH); timeSleep(100); 
     digitalWrite(ledPin_5, HIGH); timeSleep(100);
     digitalWrite(ledPin_6, HIGH); timeSleep(100);
   }
-  else {
+  else { // swith off lightariki
     digitalWrite(ledPin_4, LOW); timeSleep(100);
     digitalWrite(ledPin_5, LOW); timeSleep(100);
     digitalWrite(ledPin_6, LOW); timeSleep(100);
