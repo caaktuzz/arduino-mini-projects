@@ -8,24 +8,20 @@
 
 #define buttonPin 8
 
-uint64_t timeStamp = 0;
-uint64_t light_cycle_num = 0;
+uint64_t timeStamp[3] = {0, 0, 0}; 
+uint32_t light_cycle_num = 0;
 uint32_t loop_number = 1; 
 
 uint16_t period = 1000;
 
 void timeSleep(int milliseconds) {
   uint64_t timeStamp = millis();
-  while (true) {
-    if(millis() - timeStamp >= milliseconds){
-      return true;
-    }
-  }
-}
+  while ((millis() - timeStamp < milliseconds)) {}
+ }
 
-String print_led_status(int pin_number) {
+String print_led_status(int pin_number) { 
   return String ("LED PIN " + String(pin_number) + " is working");
-}
+ }
 
 void setup () {
   Serial.begin(9600);
@@ -40,34 +36,42 @@ void setup () {
   pinMode(buttonPin, INPUT_PULLUP);
 }
 
-int lighter (int pin_number, int delayy) {
-  //if (digitalRead(ledPin_2) == HIGH) period = 500;
- // else period = 1000; 
 
-  if (millis() - timeStamp >= delayy) {
-    timeStamp = millis(); 
-     digitalWrite(pin_number, !digitalRead(pin_number));
-     light_cycle_num += 1;
-     Serial.println(print_led_status(22));
-     }
-}
+boolean timer (int delayy, uint8_t tS_num, uint8_t pin) {
+  if (millis() - timeStamp[tS_num] >= delayy) {
+    timeStamp[tS_num] += delayy;
+     digitalWrite(pin, !digitalRead(pin));
+     return true;
+  } else return false;
+ }
 
 
 void loop () {
  loop_number += 1; 
- timeSleep(50);
- //Serial.println("LOOP "+String(loop_number));
+
+ timer(100, 0, 4);
+ timer(2000, 1, 4);
+//  if (timer(1000, 0) == true) digitalWrite(4, !digitalRead(4)); 
+  //if (timer(6000, 1) == true) digitalWrite(4, !digitalRead(4)); 
 
   if (digitalRead(buttonPin) == LOW) {
     Serial.println("BUTTON is pressed");
-      lighter(2, 500);
-    }
-
+    digitalWrite(2, HIGH); 
+  } else digitalWrite(2, LOW); 
 
 }
 
 
  /*
+  //timeSleep(50);
+ //Serial.println("LOOP "+String(loop_number));
+
+      light_cycle_num += 1;
+     Serial.println(light_cycle_num);
+
+
+   //if (digitalRead(ledPin_2) == HIGH) period = 500;
+ // else period = 1000; 
   
   if (millis() - timeStamp >= 500){
       Serial.println(1); }
