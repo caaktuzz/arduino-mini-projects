@@ -8,15 +8,17 @@
 #define g 8
 #define dp 9
 
+#define button 11
 
 
-void setup()                                                        //      A             ...2...
-{                                                                   //   F     B          7  .  3
+
+void setup()  {                                                     //      A             ...2...
+  Serial.begin(9600);                                               //   F     B          7  .  3
   pinMode(a, OUTPUT); pinMode(b, OUTPUT); pinMode(c, OUTPUT);       //      G             ...8...
   pinMode(d, OUTPUT); pinMode(e, OUTPUT); pinMode(f, OUTPUT);       //   E     c          6  .  4
   pinMode(g, OUTPUT); pinMode(dp, OUTPUT);                          //      D     DP      ...5...  9
-}                                                                   //
-
+  pinMode(button, INPUT_PULLUP);                                           //
+}
 
 void digits(uint8_t number) {
   if (number == 0) {
@@ -71,22 +73,30 @@ void reset() {
   delay(30); 
  }
 
-int time = 1000;
+void listing_digits(uint8_t mode, int timeSleep) {
+  if (mode == 1) {
+    uint8_t digit = 0;
+    while (digit <= 10) { 
+      digits(digit); delay(timeSleep); 
+      Serial.print(String(" ")+digit); 
+      digit += 1; }
+    reset(); 
+    Serial.println(' ');
+   } 
+  if (mode == 2) {
+    int8_t digit = 10;
+    while (digit >= 0) { 
+      digits(digit); delay(timeSleep); 
+      Serial.print(String(" ")+digit); 
+      digit -= 1; }
+    reset();
+    Serial.println(' ');
+   }
+ }
 
 void loop() {
-  
- digits(0); delay(time); 
- digits(1); delay(time);
- digits(2); delay(time);
- digits(3); delay(time);
- digits(4); delay(time);
- digits(5); delay(time);
- digits(6); delay(time);
- digits(7); delay(time);
- digits(8); delay(time);
- digits(9); delay(time);
- digits(10); delay(700);
- reset();
+
+  if (digitalRead(button) == LOW) listing_digits(2, 500); 
 
 }
 
