@@ -1,6 +1,15 @@
+// управление тремя переменными при помощи энкодера:
+// - нащёлкай кнопкой нужную переменную (1, 2 или 3 клика)
+// - 1 переменная просто изменяется с постоянным шагом
+// - 2 переменная: шаг 1, при зажатой кнопке - шаг 5
+// - 3 переменная: шаг 1, при быстром вращении - шаг 5
 
+#include <Arduino.h>
 #include <EncButton.h>
-EncButton enc(11, 10, 9);
+EncButton enc(9, 10, 11);
+
+
+int pins2[8] = {2,3,4,5,6,7,8,11};
 
 #define a 2
 #define b 3
@@ -9,18 +18,25 @@ EncButton enc(11, 10, 9);
 #define e 6
 #define f 7
 #define g 8
-#define dp 11
+#define dp 11 
 
+int var = 0;
 
-int bright = 8; // уровень числа 0-9
+int bright = 128; // уровень яркости светодиода
 bool state = 1;   // состояние светодиода
 
-void setup()  {                                                     //      A             ...2...
-  Serial.begin(9600);                                               //   F     B          7  .  3
-  pinMode(a, OUTPUT); pinMode(b, OUTPUT); pinMode(c, OUTPUT);       //      G             ...8...
-  pinMode(d, OUTPUT); pinMode(e, OUTPUT); pinMode(f, OUTPUT);       //   E     c          6  .  4
-  pinMode(g, OUTPUT); pinMode(dp, OUTPUT);                          //      D     DP      ...5...  9
+void setup() {
+  Serial.begin(9600);
+  
+  pinMode(a, OUTPUT); 
+  pinMode(b, OUTPUT); 
+  pinMode(c, OUTPUT);
+  pinMode(d, OUTPUT); 
+  pinMode(e, OUTPUT); 
+  pinMode(f, OUTPUT);
+  pinMode(g, OUTPUT);
 }
+
 
 void digits(uint8_t number) {
   if (number == 0) {
@@ -31,7 +47,7 @@ void digits(uint8_t number) {
     digitalWrite(a, LOW); digitalWrite(b, HIGH); digitalWrite(c, HIGH); digitalWrite(d, LOW);   // say 1
     digitalWrite(e, LOW); digitalWrite(f, LOW); digitalWrite(g, LOW); digitalWrite(dp, LOW);  
   }
-  if ( number == 2) {
+  if (number == 2) {
     digitalWrite(a, HIGH); digitalWrite(b, HIGH); digitalWrite(c, LOW); digitalWrite(d, HIGH);   // say 2
     digitalWrite(e, HIGH); digitalWrite(f, LOW); digitalWrite(g, HIGH); digitalWrite(dp, LOW); 
   }
@@ -73,27 +89,16 @@ void reset() {
   digitalWrite(a, LOW); digitalWrite(b, LOW); digitalWrite(c, LOW); digitalWrite(d, LOW);   //don`t say anything
   digitalWrite(e, LOW); digitalWrite(f, LOW); digitalWrite(g, LOW); digitalWrite(dp, LOW);
   delay(30); 
- }
+ } 
+
 
 
 void loop() {
- enc.tick(); 
+  enc.tick();
   
-  if (enc.right()) { // повышение уровня яркости
-    bright = constrain(bright + 1, 0, 10);
-    Serial.println(bright);
-   }
-   
-  if (enc.left()) { // понижение уровня яркости
-    bright = constrain(bright - 1, 0, 10);
-    Serial.println(bright);
-   }
-   
-  if (enc.click()) state = !state; // переключение состояния 
-  if (state == 0) bright = 0;
-
-  digits(bright);
-
-  //analogWrite(LED_PIN_3, bright); // запуск светодиода с установкой яркости
- 
+  if (enc.turn()) {
+        var = constrain(var += 1 * enc.dir(), 0, 9);
+        Serial.println(String("vars ") + var);  
+        digits(var);
+    }
 }
