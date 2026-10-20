@@ -1,6 +1,6 @@
 
 
-#define button1 10
+//#define button1 10
 
 // Пины сегментов (A, B, C, D, E, F, G, DP)
 const int segPins[] = {2,3,4,5,6,7,8}; 
@@ -58,7 +58,7 @@ const byte digitCode[10][7] = {
 void setup() {
   Serial.begin(9600);
 
-  pinMode(button1, INPUT_PULLUP); // кнопкa
+ // pinMode(button1, INPUT_PULLUP); // кнопкa
 
   pinMode(a, OUTPUT); // сегменты индикатора
   pinMode(b, OUTPUT);
@@ -126,9 +126,9 @@ void switch_digits(uint8_t number) {
   }
 
   if (number == 11) {
-  digitalWrite(D1, LOW); digitalWrite(D2, LOW); digitalWrite(D3, LOW); digitalWrite(D4, LOW); 
-  digitalWrite(a, HIGH); digitalWrite(b, HIGH); digitalWrite(c, HIGH); digitalWrite(d, HIGH);   //don`t say anything
-  digitalWrite(e, HIGH); digitalWrite(f, HIGH); digitalWrite(g, HIGH); digitalWrite(dp, HIGH);
+    digitalWrite(D1, LOW); digitalWrite(D2, LOW); digitalWrite(D3, LOW); digitalWrite(D4, LOW); 
+    digitalWrite(a, HIGH); digitalWrite(b, HIGH); digitalWrite(c, HIGH); digitalWrite(d, HIGH);   //don`t say anything
+    digitalWrite(e, HIGH); digitalWrite(f, HIGH); digitalWrite(g, HIGH); digitalWrite(dp, HIGH);
  } 
 }
 
@@ -185,9 +185,9 @@ boolean timer (int delayy) {
 
 bool status = true;
 
-uint16_t number = 8888;
+uint16_t number = 0000;
 uint16_t digits[4] = {0,0,0,0};
-uint16_t time = 200;
+uint16_t time_s = 200;
 uint8_t cv = 0;
 
 void loop() {
@@ -195,26 +195,31 @@ void loop() {
   //Serial.println(number);
   j_data();
   //Serial.println("vr_x: "+String(vr_x_data)+" vr_y: "+String(vr_y_data)+" sw: "+String(sw_data)+"    crd: "+String(crd));
-  if(timer(time) == true) {
-
-    cv += 1;
-    if(cv >= 5) {
-      time = 50; 
-      cv = 0; }
-
+  if(timer(time_s) == true) {
+    
     if(crd == 1) number += 1; 
     if(crd == -1) number -= 1;
     if(crd == 2) number = 0; 
     if(crd == -2) number += 100; 
 
-    if(crd == 0) time = 200; cv = 0;
+    if(crd != 0) cv += 1;
+    else {
+      time_s = 200; 
+      cv = 0;
+     }
+    
+    if(cv > 5) {
+      time_s -= 10;
+      if(time_s < 10) time_s = 10; 
+     }
+    
 
     if(number < 0) number = 9999;
     if(number > 9999) number = 0;
 
-    if(sw_data == 0) status = !status;
-    if(status == false) switch_digits(11);
-
+    //if(sw_data == 0) status = !status;
+    //if(status == false) switch_digits(11); 
+    
     digits[0] = (number / 1000) % 10;
     digits[1] = (number / 100) % 10;
     digits[2] = (number / 10) % 10;
@@ -227,6 +232,3 @@ void loop() {
   printNumber(digits, 4);
 
 }
-
-
-
