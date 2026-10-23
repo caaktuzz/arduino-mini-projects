@@ -1,6 +1,6 @@
 
 
-//#define button1 10
+//#define button1 10 
 
 // Пины сегментов (A, B, C, D, E, F, G, DP)
 const int segPins[] = {2,3,4,5,6,7,8}; 
@@ -21,14 +21,14 @@ const int digitPins[4] = {A2, A3, A4, A5};
 #define D3 A4
 #define D4 A5
 
+uint64_t timeStamp = 0; // для задержки это 
 
-#define vr_x A0
+
+#define vr_x A0 // пины джойстика 
 #define vr_y A1
 #define sw 10
 
-uint64_t timeStamp = 0;
-
-int16_t vr_x_data = 0;
+int16_t vr_x_data = 0; 
 int16_t vr_y_data = 0;
 int8_t sw_data = 0;
 int8_t crd = 9;
