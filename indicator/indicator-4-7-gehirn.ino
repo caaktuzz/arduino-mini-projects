@@ -22,8 +22,6 @@ const int digitPins[4] = {A2, A3, A4, A5};
 #define D4 A5
 
 
-int var = 0;
-
 #define vr_x A0
 #define vr_y A1
 #define sw 10
@@ -36,7 +34,7 @@ int8_t sw_data = 0;
 int8_t crd = 9;
 
 // Маска цифр от 0 до 9 для общего анода (0 — сегмент горит, 1 — не горит)
-const byte digitCode[10][7] = {
+const byte digitCode[10][7] = { // просто резервная альтернатива
   {0, 0, 0, 0, 0, 0, 1}, // 0
   {1, 0, 0, 1, 1, 1, 1}, // 1
   {0, 0, 1, 0, 0, 1, 0}, // 2
@@ -79,9 +77,9 @@ void setup() {
 
 
 
-void switch_digits(uint8_t number) {
+void switch_digits(uint8_t number) { // зажигание сегментов так шобы цифорки получались
   if (number == 0) {
-    digitalWrite(a, LOW); digitalWrite(b, LOW); digitalWrite(c, LOW); digitalWrite(d, LOW);   // say 0
+    digitalWrite(a, LOW); digitalWrite(b, LOW); digitalWrite(c, LOW); digitalWrite(d, LOW);   // say 0 
     digitalWrite(e, LOW); digitalWrite(f, LOW); digitalWrite(g, HIGH); digitalWrite(dp, HIGH); 
   }
   if (number == 1) {
@@ -132,15 +130,14 @@ void switch_digits(uint8_t number) {
  } 
 }
 
-void switch_zone(uint8_t number, uint8_t status) {
+void switch_zone(uint8_t number, uint8_t status) { // переключение разряда
   if(status == 0) digitalWrite(number, HIGH);
   else digitalWrite(number, LOW);
 }
 
-uint8_t digit = 0;
-// Функция вывода 4-значного числа
+uint8_t digit = 0;  // Функция вывода 4-значного числа
 void printNumber(int *arr, size_t size) {
-
+  
     switch_zone(digitPins[digit], 0);
     switch_digits(arr[digit]);
 
@@ -154,9 +151,9 @@ void printNumber(int *arr, size_t size) {
 }
 
 
-void j_data() {
-  vr_x_data = map(analogRead(vr_x), 0, 1023, -100, 100);
-  vr_y_data = map(analogRead(vr_y), 0, 1023, -100, 100);
+void j_data() { // мозги джойстика
+  vr_x_data = map(analogRead(vr_x), 0, 1023, -100, 100); // преобразование диапазонов 
+  vr_y_data = map(analogRead(vr_y), 0, 1023, -100, 100); 
   sw_data = digitalRead(sw);
 
   if(vr_x_data > 50 && vr_y_data < 50) crd = 1;  // вперёд по оси х
@@ -175,7 +172,7 @@ void j_data() {
    
 }
 
-boolean timer (int delayy) {
+boolean timer (int delayy) { // сверка времени задержки
   if (millis() - timeStamp >= delayy) {
     timeStamp += delayy;
      return true;
@@ -183,36 +180,25 @@ boolean timer (int delayy) {
  }
 
 
-bool status = true;
 
-uint16_t number = 0000;
+int16_t number = 0000;
 uint16_t digits[4] = {0,0,0,0};
-uint16_t time_s = 200;
-uint8_t cv = 0;
+uint16_t delay_time = 200;
 
 void loop() {
-
-  //Serial.println(number);
   j_data();
   //Serial.println("vr_x: "+String(vr_x_data)+" vr_y: "+String(vr_y_data)+" sw: "+String(sw_data)+"    crd: "+String(crd));
-  if(timer(time_s) == true) {
+  
+  if(timer(delay_time) == true) {
     
-    if(crd == 1) number += 1; 
+    if(crd == 1) number += 1;  // операции над числом в зависимости от положения джойстика
     if(crd == -1) number -= 1;
     if(crd == 2) number = 0; 
     if(crd == -2) number += 100; 
 
-    if(crd != 0) cv += 1;
-    else {
-      time_s = 200; 
-      cv = 0;
-     }
-    
-    if(cv > 5) {
-      time_s -= 10;
-      if(time_s < 10) time_s = 10; 
-     }
-    
+     delay_time -= 10; // ускорение смены числа 
+     if (crd == 0) delay_time = 200;
+     if(delay_time < 10) delay_time = 10; 
 
     if(number < 0) number = 9999;
     if(number > 9999) number = 0;
@@ -225,9 +211,6 @@ void loop() {
     digits[2] = (number / 10) % 10;
     digits[3] = number % 10;
   }
-
-  //Serial.println(String(numbers[0]) +"  "+ String(numbers[1]) +"  "+ String(numbers[2]) +"  "+ String(numbers[3]));
-  //Serial.println(numbers[3]*1000+numbers[2]*100+numbers[1]*10+numbers[0]);
   
   printNumber(digits, 4);
 
