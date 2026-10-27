@@ -184,6 +184,7 @@ boolean timer (int delayy) { // сверка времени задержки
 int16_t number = 0000;
 uint16_t digits[4] = {0,0,0,0};
 uint16_t delay_time = 200;
+bool work_status = true;
 
 void loop() {
   j_data();
@@ -203,8 +204,11 @@ void loop() {
     if(number < 0) number = 9999;
     if(number > 9999) number = 0;
 
-    //if(sw_data == 0) status = !status;
-    //if(status == false) switch_digits(11); 
+    if(sw_data == 0) {
+      work_status = !work_status;
+      Serial.println(sw_data);
+      switch_digits(11); 
+    }
     
     digits[0] = (number / 1000) % 10;
     digits[1] = (number / 100) % 10;
@@ -212,6 +216,6 @@ void loop() {
     digits[3] = number % 10;
   }
   
-  printNumber(digits, 4);
-
+  if(work_status == true) printNumber(digits, 4);
+ 
 }
