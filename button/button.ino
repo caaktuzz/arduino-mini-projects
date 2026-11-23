@@ -7,7 +7,7 @@
 
 int num = 0;
 
-// delay func
+// delay func. самописный делей законен?
 boolean timeSleep(int milliseconds) {
   uint64_t timeStamp = millis();
   while (true) {
